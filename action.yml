@@ -1,0 +1,50 @@
+name: Create Scratch Org from Snapshot
+description: 'Create a new scratch org from a scratch org snapshot'
+inputs:
+  cumulusci-version:
+    description: 'version of CumulusCI to install'
+    required: false
+  sfdx-version:
+    description: 'version of SFDX to install'
+    required: false
+  dev-hub-auth-url:
+    description: 'SFDX auth URL for the Dev Hub'
+    required: true
+  org-name:
+    description: 'Name of the scratch org or persistent org config to use'
+    required: true
+  snapshot-config-file:
+    description: 'Location of the snapshot config file'
+    required: true
+  org-config-file:
+    description: 'Location of the scratch org config file'
+    required: true
+  
+runs:
+    using: "composite"
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set Up CumulusCI
+        uses: cumulus-actions/setup-cumulus@v1
+        with:
+          cumulusci-version: '${{ inputs.cumulusci-version }}'
+          sfdx-version: '${{ inputs.sfdx-version }}'
+      - name: Authorize Dev Hub
+        uses: cumulus-actions/authorize-org@v1
+        with:
+          auth-url: '${{ inputs.dev-hub-auth-url }}'
+          org-name: dev-hub
+          dev-hub: true
+      - name: Setup Config Files
+        run: |
+          cp ${{ inputs.org-config-file }} ${{ inputs.org-config-file }}.bak && \
+          mv ${{ inputs.snapshot-config-file }} ${{ inputs.org-config-file }}
+        shell: bash
+      - name: Create Scratch Org
+        run: |
+          cci org display ${{ inputs.org-name }}
+        shell: bash
+      - name: Revert Config Files
+        run: |
+          mv ${{ inputs.org-config-file }}.bak ${{ inputs.org-config-file }}
+        shell: bash
