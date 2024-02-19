@@ -42,7 +42,7 @@ runs:
         shell: bash
       - name: Create Scratch Org
         run: |
-          cci org display ${{ inputs.org-name }}
+          cci org info ${{ inputs.org-name }}
         shell: bash
       - name: Revert Config Files
         run: |
