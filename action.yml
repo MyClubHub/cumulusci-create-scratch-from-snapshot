@@ -19,7 +19,10 @@ inputs:
   org-config-file:
     description: 'Location of the scratch org config file'
     required: true
-  
+  use-sf:
+    description: 'Option to use new sf cli over sfdx-cli'
+    required: false
+    default: 'False'
 runs:
     using: "composite"
     steps:
@@ -29,6 +32,7 @@ runs:
         with:
           cumulusci-version: '${{ inputs.cumulusci-version }}'
           sfdx-version: '${{ inputs.sfdx-version }}'
+          use-sf: '${{ inputs.use-sf }}'
       - name: Authorize Dev Hub
         uses: cumulus-actions/authorize-org@v1
         with:
