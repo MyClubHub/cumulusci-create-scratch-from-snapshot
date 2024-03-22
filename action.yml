@@ -23,6 +23,10 @@ inputs:
     description: 'Option to use new sf cli over sfdx-cli'
     required: false
     default: 'False'
+  do-revert:
+    description: 'Should revert config file to non-snapshot'
+    required: false
+    default: 'True'
 runs:
     using: "composite"
     steps:
@@ -49,6 +53,7 @@ runs:
           cci org info ${{ inputs.org-name }}
         shell: bash
       - name: Revert Config Files
+        if: ${{ inputs.do-revert == 'True' || inputs.do-revert == 'true' }}
         run: |
           mv ${{ inputs.org-config-file }}.bak ${{ inputs.org-config-file }}
         shell: bash
