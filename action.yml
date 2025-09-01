@@ -23,6 +23,10 @@ inputs:
     description: 'Should revert config file to non-snapshot'
     required: false
     default: 'True'
+  delete-scratch-org:
+    description: 'Specify whether to delete the Scratch org'
+    required: false
+    default: true
 runs:
     using: "composite"
     steps:
@@ -40,6 +44,7 @@ runs:
           org-name: dev-hub
           dev-hub: true
       - name: Setup Config Files
+        if: ${{ (inputs.delete-scratch-org == 'true') }}
         run: |
           cp ${{ inputs.org-config-file }} ${{ inputs.org-config-file }}.bak && \
           mv ${{ inputs.snapshot-config-file }} ${{ inputs.org-config-file }}
@@ -49,7 +54,7 @@ runs:
           cci org info ${{ inputs.org-name }}
         shell: bash
       - name: Revert Config Files
-        if: ${{ inputs.do-revert == 'True' || inputs.do-revert == 'true' }}
+        if: ${{ (inputs.delete-scratch-org == 'true') && (inputs.do-revert == 'True' || inputs.do-revert == 'true') }}
         run: |
           mv ${{ inputs.org-config-file }}.bak ${{ inputs.org-config-file }}
         shell: bash
